@@ -6,3 +6,6 @@ The idea is simple: you run this script, you plug in a cable, you hit enter, and
 
 ### Dependencies
 - PySerial
+
+### FYIs
+- the telematic.json config is just my personal one, go ahead and fork this repo + add yr own!
