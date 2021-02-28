@@ -1,5 +1,7 @@
 {
-    "telnet_host": "cavebbs.homeip.net",
+    "telnet_hosts": [
+        "cavebbs.homeip.net"
+    ],
     "serial_path": "/dev/cu.usbserial-00000F4F",
     "baud_rate": 2400,
     "max_read_size": 4096

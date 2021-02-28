@@ -5,7 +5,7 @@ from telnetlib import Telnet
 
 class ConnectionManager:
     def __init__(self, config):
-        self.host = config['telnet_host']
+        self.hosts = config['telnet_hosts']
         self.serial_path = config['serial_path']
         self.baud = config['baud_rate']
         self.read_size = config['max_read_size']
@@ -15,6 +15,7 @@ class ConnectionManager:
     def connect(self):
         self.serial_connection = serial.Serial(self.serial_path, self.baud, timeout=1)
         self._wait_for_go()
+        self._select_active_host()
         self._begin_telnet()
 
     def _wait_for_go(self):
@@ -35,9 +36,26 @@ class ConnectionManager:
             except EOFError:
                 self.serial_connection.write("\n\Server Disconnected!\n".encode("ascii"))
                 is_connected = False
-                
+    
+    def _select_active_host(self):
+        option = 0
+        for host in self.hosts:
+            self.serial_connection.write(b'\n\r')
+            opt_string = "%d> %s" % (option, host)
+            self.serial_connection.write(opt_string.encode("ascii"))
+
+        selection = b''
+        while selection == b'':
+            selection = self.serial_connection.read(1)
+        try:
+            self.active_host = self.hosts[int(selection)]
+        except:
+            self.serial_connection.write(b'\n\r')
+            self.serial_connection.write("ERROR! Try again.".encode('ascii'))
+            self._select_active_host()
+
     def _begin_telnet(self):
-        connection_msg = "\033c connecting to: %s" % (self.host)
+        connection_msg = "\033c connecting to: %s" % (self.active_host)
         self.serial_connection.write(connection_msg.encode('ascii'))
-        self.telnet_connection = Telnet(self.host)
+        self.telnet_connection = Telnet(self.active_host)
         self.data_forwarding.start()
