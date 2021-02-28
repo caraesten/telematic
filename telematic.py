@@ -1,5 +1,4 @@
 import json, os
-import time
 from lib.connection_manager import ConnectionManager
 
 CONFIG_PATH = "telematic.json"
@@ -10,8 +9,3 @@ if __name__ == '__main__':
 
     connection = ConnectionManager(config)
     connection.connect()
-    
-    print("Connecting...")
-    while True:
-        # idk maybe just check status periodically on bg threads
-        time.sleep(5)
